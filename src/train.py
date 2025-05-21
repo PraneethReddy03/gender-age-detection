@@ -62,7 +62,7 @@ def main(data_dir, epochs, batch_size):
     val_count   = total - train_count
     print(f"DEBUG: {total} total images → {train_count} train / {val_count} val")
 
-    model = build_model((64, 64, 3), n_age_classes=10)
+    model = build_model((64, 64, 3), n_age_classes=12)
     ckpt = callbacks.ModelCheckpoint(
         "outputs/models/best.h5",
         save_best_only=True,
