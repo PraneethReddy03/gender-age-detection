@@ -28,8 +28,10 @@ def build_model(input_shape, n_age_classes):
     return model
 
 def parse_filename(fp):
-    # filename like '23_0_...jpg'
-    parts = tf.strings.split(tf.strings.basename(fp), '_')
+    # Extract just the filename (after the last slash)
+    filename = tf.strings.split(fp, os.sep)[-1]
+    # Now split on underscores: '23_0_...' → ['23','0',...]
+    parts = tf.strings.split(filename, '_')
     age = tf.strings.to_number(parts[0], out_type=tf.int32)
     gender = tf.strings.to_number(parts[1], out_type=tf.int32)
     age_bracket = age // 10
