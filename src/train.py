@@ -46,3 +46,6 @@ if __name__ == "__main__":
     p.add_argument("--batch_size",type=int, default=32)
     args = p.parse_args()
     main(args.data_dir, args.epochs, args.batch_size)
+ø
+ø
+
