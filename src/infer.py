@@ -21,26 +21,37 @@ def infer(model_path):
             face = frame[y:y+h, x:x+w]
             face_resized = cv2.resize(face, (64, 64))
             inp = np.expand_dims(face_resized / 255.0, 0)
+
+            # Run inference
             gender_pred, age_pred = model.predict(inp)
-            gender = "M" if gender_pred[0][0] > 0.5 else "F"
-            age = np.argmax(age_pred, axis=-1)[0]
-            age_label = age_ranges.get(age, "Unknown")
+            prob_female = float(gender_pred[0][0])
+            gender = "F" if prob_female > 0.5 else "M"
+
+            # Age bracket
+            age_idx = np.argmax(age_pred, axis=-1)[0]
+            age_label = age_ranges.get(age_idx, "Unknown")
+
+            # Draw box + text
             cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
             cv2.putText(
                 frame,
-                f"{gender}, {age_label}",
+                f"{gender} ({prob_female:.2f}), {age_label}",
                 (x, y - 10),
                 cv2.FONT_HERSHEY_SIMPLEX,
                 0.8,
                 (255, 0, 0),
                 2
             )
+
         cv2.imshow("Gender & Age", frame)
-        if cv2.waitKey(1) == 27:
+        key = cv2.waitKey(1) & 0xFF
+        if key == 27 or key == ord('q'):
             break
+        if cv2.getWindowProperty("Gender & Age", cv2.WND_PROP_VISIBLE) < 1:
+            break
+
     cap.release()
     cv2.destroyAllWindows()
-
 if __name__ == "__main__":
     p = argparse.ArgumentParser()
     p.add_argument("--model", required=True, help="Path to your trained model file (either .h5 or .keras)")
